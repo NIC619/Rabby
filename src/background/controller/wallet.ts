@@ -1699,6 +1699,12 @@ export class WalletController extends BaseController {
   setThemeMode = (themeMode: DARK_MODE_TYPE) =>
     preferenceService.setThemeMode(themeMode);
 
+  getUncensoredMode = () => preferenceService.getUncensoredMode();
+
+  setUncensoredMode = (enabled: boolean) => {
+    return preferenceService.setUncensoredMode(enabled);
+  };
+
   isReserveGasOnSendToken = () => preferenceService.isReserveGasOnSendToken();
   setReserveGasOnSendToken = (val: boolean) =>
     preferenceService.setPreferencePartials({ reserveGasOnSendToken: val });

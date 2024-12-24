@@ -1083,6 +1083,7 @@
         "offline": "The network is disconnected and no data is obtained",
         "panel": {
           "swap": "Swap",
+          "uncensored": "Uncensored",
           "send": "Send",
           "receive": "Receive",
           "gasTopUp": "Gas Top Up",

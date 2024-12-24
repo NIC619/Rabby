@@ -17,6 +17,9 @@ import IconSendToken, {
 import IconSwap, {
   ReactComponent as RcIconSwap,
 } from 'ui/assets/dashboard/swap.svg';
+import IconUncensored, {
+  ReactComponent as RcIconUncensored,
+} from 'ui/assets/dashboard/uncensored.svg';
 import IconReceive, {
   ReactComponent as RcIconReceive,
 } from 'ui/assets/dashboard/receive.svg';
@@ -98,6 +101,8 @@ export default ({
   );
 
   const [isShowEcology, setIsShowEcologyModal] = useState(false);
+
+  const [isUncensoredMode, setIsUncensoredMode] = useState(false);
 
   const wallet = useWallet();
 
@@ -190,16 +195,29 @@ export default ({
     commingSoonBadge?: boolean;
     disableReason?: string;
     eventKey: string;
+    isActive?: boolean;
   };
 
   const panelItems = {
-    swap: {
-      icon: RcIconSwap,
-      eventKey: 'Swap',
-      content: t('page.dashboard.home.panel.swap'),
-      onClick: () => {
-        history.push('/dex-swap?rbisource=dashboard');
+    // swap: {
+    //   icon: RcIconSwap,
+    //   eventKey: 'Swap',
+    //   content: t('page.dashboard.home.panel.swap'),
+    //   onClick: () => {
+    //     history.push('/dex-swap?rbisource=dashboard');
+    //   },
+    // } as IPanelItem,
+    uncensored: {
+      icon: RcIconUncensored,
+      eventKey: 'Uncensored',
+      content: t('page.dashboard.home.panel.uncensored'),
+      onClick: async () => {
+        const isUncensoredModeStored = await wallet.getUncensoredMode();
+        console.log('isUncensoredModeStored', isUncensoredModeStored);
+        setIsUncensoredMode(!isUncensoredModeStored);
+        await wallet.setUncensoredMode(!isUncensoredModeStored);
       },
+      isActive: isUncensoredMode,
     } as IPanelItem,
     send: {
       icon: RcIconSendToken,
@@ -286,7 +304,8 @@ export default ({
 
   if (isGnosis) {
     pickedPanelKeys = [
-      'swap',
+      // 'swap',
+      'uncensored',
       'send',
       'receive',
       'bridge',
@@ -298,7 +317,8 @@ export default ({
     ];
   } else {
     pickedPanelKeys = [
-      'swap',
+      // 'swap',
+      'uncensored',
       'send',
       'receive',
       'bridge',
@@ -351,7 +371,9 @@ export default ({
                   });
                   item?.onClick(evt);
                 }}
-                className="direction pointer"
+                className={clsx('direction pointer', {
+                  active: item.isActive,
+                })}
               >
                 {item.showAlert && (
                   <ThemeIcon src={IconAlertRed} className="icon icon-alert" />

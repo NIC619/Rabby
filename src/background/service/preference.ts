@@ -120,6 +120,7 @@ export interface PreferenceStore {
   hiddenBalance?: boolean;
   isShowTestnet?: boolean;
   themeMode?: DARK_MODE_TYPE;
+  isUncensoredMode?: boolean;
   addressSortStore: AddressSortStore;
 
   /** @deprecated */
@@ -181,6 +182,7 @@ class PreferenceService {
         hiddenBalance: false,
         isShowTestnet: false,
         themeMode: DARK_MODE_TYPE.light,
+        isUncensoredMode: true,
         addressSortStore: {
           ...defaultAddressSortStore,
         },
@@ -577,6 +579,14 @@ class PreferenceService {
 
   setThemeMode = (themeMode: DARK_MODE_TYPE) => {
     this.store.themeMode = themeMode;
+  };
+
+  getUncensoredMode = () => {
+    return this.store.isUncensoredMode;
+  };
+
+  setUncensoredMode = (enabled: boolean) => {
+    this.store.isUncensoredMode = enabled;
   };
 
   /** @deprecated */
