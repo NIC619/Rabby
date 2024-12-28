@@ -437,11 +437,17 @@ class ProviderController extends BaseController {
         console.log(e);
       }
     }
-    const chain = permissionService.isInternalOrigin(origin)
+    let chain = permissionService.isInternalOrigin(origin)
       ? (findChain({
           id: approvalRes.chainId,
         })?.enum as CHAINS_ENUM)
       : permissionService.getConnectedSite(origin)!.chain;
+    // If Uncensored Mode is enabled and the tx is for L1, then the L1 chain info should be used
+    // (because user is still connected to the L2 chain and we did not ask the user to switch to L1)
+    const isUncensoredMode = preferenceService.getUncensoredMode();
+    if (isUncensoredMode && approvalRes.chainId === 11155111) {
+      chain = 'CUSTOM_11155111' as CHAINS_ENUM; // Use L1 chain instead
+    }
 
     const approvingTx = transactionHistoryService.getSigningTx(signingTxId!);
 
