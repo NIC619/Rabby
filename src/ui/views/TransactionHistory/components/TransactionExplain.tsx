@@ -5,6 +5,7 @@ import { SvgIconOpenExternal } from 'ui/assets';
 import IconUser from 'ui/assets/address-management.svg';
 import IconUnknown from 'ui/assets/icon-unknown.svg';
 import { splitNumberByStep } from 'ui/utils/number';
+import IconUncensored from 'ui/assets/dashboard/uncensored.svg';
 
 export const TransactionExplain = ({
   isFailed,
@@ -13,6 +14,7 @@ export const TransactionExplain = ({
   isWithdrawed,
   explain,
   onOpenScan,
+  isUncensored,
 }: {
   isFailed: boolean;
   isSubmitFailed: boolean;
@@ -20,6 +22,7 @@ export const TransactionExplain = ({
   isWithdrawed: boolean;
   explain?: ExplainTxResponse;
   onOpenScan(): void;
+  isUncensored?: boolean;
 }) => {
   const { t } = useTranslation();
   let icon: React.ReactNode = (
@@ -181,6 +184,14 @@ export const TransactionExplain = ({
       );
       content = explain.type_call.action;
     }
+  }
+  if (isUncensored) {
+    icon = <img className="icon icon-explain" src={IconUncensored} />;
+    content = (
+      <span className="text-red-light font-bold">
+        Force Inclusion Transaction
+      </span>
+    );
   }
 
   return (

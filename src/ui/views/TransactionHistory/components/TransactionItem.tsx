@@ -270,6 +270,7 @@ export const TransactionItem = ({
             isWithdrawed={!!maxGasTx?.isWithdrawed}
             explain={item.explain}
             onOpenScan={handleOpenScan}
+            isUncensored={!!item.txs[0].isUncensoredMode}
           />
           {isPending && (
             <div

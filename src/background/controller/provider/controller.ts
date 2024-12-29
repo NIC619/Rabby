@@ -565,6 +565,7 @@ class ProviderController extends BaseController {
             failed: false,
             reqId,
             pushType,
+            isUncensoredMode: options?.data?.params[0].isUncensoredMode,
           },
           explain: cacheExplain,
           actionData: action,
