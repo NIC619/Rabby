@@ -52,6 +52,15 @@ export const SignTitle = styled.div`
   }
 `;
 
+const ActionNameSpan = styled.span<{ $isUncensoredMode: boolean }>`
+  ${(props) =>
+    props.$isUncensoredMode &&
+    `
+    color: red;
+    font-weight: bold;
+  `}
+`;
+
 export const TestnetActions = ({
   chain,
   raw,
@@ -60,6 +69,7 @@ export const TestnetActions = ({
   isReady,
   originLogo,
   origin,
+  isUncensoredMode,
 }: {
   chain: Chain;
   raw: Record<string, string | number>;
@@ -68,6 +78,7 @@ export const TestnetActions = ({
   isReady?: boolean;
   originLogo?: string;
   origin: string;
+  isUncensoredMode?: boolean;
 }) => {
   const handleViewRawClick = () => {
     ViewRawModal.open({
@@ -76,7 +87,9 @@ export const TestnetActions = ({
   };
   const { t } = useTranslation();
   const isUnknown = true;
-  const actionName = t('page.signTx.unknownActionType');
+  const actionName = isUncensoredMode
+    ? 'Force Inclusion Transaction'
+    : t('page.signTx.unknownActionType');
 
   if (!isReady) {
     return <Loading />;
@@ -113,8 +126,10 @@ export const TestnetActions = ({
                   />
                 </TooltipWithMagnetArrow>
               )}
-              <span>{actionName}</span>
-              {isUnknown && (
+              <ActionNameSpan $isUncensoredMode={isUncensoredMode || false}>
+                {actionName}
+              </ActionNameSpan>
+              {isUnknown && !isUncensoredMode && (
                 <TooltipWithMagnetArrow
                   inApproval
                   placement="bottom"
@@ -132,18 +147,20 @@ export const TestnetActions = ({
                 </TooltipWithMagnetArrow>
               )}
             </div>
-            <div className="right">
-              <div
-                className="float-right text-13 cursor-pointer flex items-center view-raw"
-                onClick={handleViewRawClick}
-              >
-                {t('page.signTx.viewRaw')}
-                <ThemeIcon
-                  className="icon icon-arrow-right"
-                  src={RcIconArrowRight}
-                />
+            {!isUncensoredMode && (
+              <div className="right">
+                <div
+                  className="float-right text-13 cursor-pointer flex items-center view-raw"
+                  onClick={handleViewRawClick}
+                >
+                  {t('page.signTx.viewRaw')}
+                  <ThemeIcon
+                    className="icon icon-arrow-right"
+                    src={RcIconArrowRight}
+                  />
+                </div>
               </div>
-            </div>
+            )}
           </div>
           <Divide />
 

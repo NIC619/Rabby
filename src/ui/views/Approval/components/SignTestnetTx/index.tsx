@@ -641,6 +641,10 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
     return null;
   }
 
+  const isUncensoredMode = params.data[0].isUncensoredMode
+    ? params.data[0].isUncensoredMode
+    : false;
+
   return (
     <>
       <div className="approval-tx overflow-x-hidden">
@@ -655,6 +659,7 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
           isSpeedUp={isSpeedUp}
           originLogo={params.session.icon}
           origin={params.session.origin}
+          isUncensoredMode={isUncensoredMode}
         />
 
         {isReady && (

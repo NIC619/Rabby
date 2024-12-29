@@ -211,7 +211,7 @@ const flowContext = flow
         const gasLimit = txParams.gas ? txParams.gas : 1000000; // If DApp doesn't provide gas limit, use 1m gas as default
         const l1ForceInclusionTx = uncensored.transformTransaction({
           to: txParams.to,
-          value: BigInt(txParams.value),
+          value: txParams.value ? BigInt(txParams.value) : BigInt(0),
           data: txParams.data,
           gasLimit: gasLimit,
           chainId: txParams.chainId,
@@ -223,6 +223,7 @@ const flowContext = flow
         ctx.request.data.params[0].value = l1ForceInclusionTx.value.toString();
         ctx.request.data.params[0].data = l1ForceInclusionTx.data;
         delete ctx.request.data.params[0].gas; // Gas was set for L2 tx, we delete it and estimate it again on L1
+        ctx.request.data.params[0].isUncensoredMode = true;
       }
       ctx.approvalRes = await notificationService.requestApproval(
         {
