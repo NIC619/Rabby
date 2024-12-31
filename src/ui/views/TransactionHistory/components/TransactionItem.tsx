@@ -29,6 +29,8 @@ import { useGetTx, useLoadTxData } from '../hooks';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { findChain } from '@/utils/chain';
 import { getTxScanLink } from '@/utils';
+import { ReactComponent as RcIconUncensored } from '@/ui/assets/dashboard/uncensored.svg';
+import { UncensoredSDK } from '@rollup-uncensored/sdk';
 
 const ChildrenWrapper = styled.div`
   padding: 2px;
@@ -238,6 +240,72 @@ export const TransactionItem = ({
 
   const isPending = checkIsPendingTxGroup(item);
 
+  const handleClickForceInclude = async () => {
+    if (!canCancel) return;
+
+    // Transform the transaction using the SDK
+    const uncensored = new UncensoredSDK();
+    const rawL1ForceInclusionTx = uncensored.transformTransaction({
+      to: originTx.rawTx.to,
+      value: originTx.rawTx.value ? BigInt(originTx.rawTx.value) : BigInt(0),
+      data: originTx.rawTx.data,
+      gasLimit: originTx.rawTx.gas!,
+      chainId: item.chainId,
+    });
+
+    const l1ForceInclusionTx = {
+      ...rawL1ForceInclusionTx,
+      chainId: 11155111, // Sepolia
+      from: originTx.rawTx.from,
+      nonce: intToHex(
+        await wallet.getNonceByChain(
+          originTx.rawTx.from,
+          11155111 // Sepolia
+        )
+      ),
+      value: rawL1ForceInclusionTx.value.toString(),
+    };
+
+    const chain = findChain({
+      id: 11155111, // Sepolia
+    });
+    if (!chain) {
+      throw new Error('chainServerId not found');
+    }
+
+    const gasLevels: GasLevel[] = chain.isTestnet
+      ? await wallet.getCustomTestnetGasMarket({
+          chainId: chain.id,
+        })
+      : await wallet.gasMarketV2({
+          chain: chain,
+          tx: l1ForceInclusionTx,
+        });
+    const maxGasMarketPrice = maxBy(gasLevels, (level) => level.price)!.price;
+
+    // Prepare the final transaction
+    const finalTx = {
+      from: l1ForceInclusionTx.from,
+      to: l1ForceInclusionTx.to,
+      value: l1ForceInclusionTx.value,
+      data: l1ForceInclusionTx.data,
+      nonce: l1ForceInclusionTx.nonce,
+      chainId: l1ForceInclusionTx.chainId, // Sepolia
+      gasPrice: intToHex(maxGasMarketPrice),
+    };
+
+    await wallet.sendRequest({
+      method: 'eth_sendTransaction',
+      params: [
+        {
+          ...finalTx,
+          isUncensoredMode: true,
+        },
+      ],
+    });
+    window.close();
+  };
+
   return (
     <div
       className={clsx('tx-history__item', {
@@ -270,6 +338,7 @@ export const TransactionItem = ({
             isWithdrawed={!!maxGasTx?.isWithdrawed}
             explain={item.explain}
             onOpenScan={handleOpenScan}
+            isUncensored={!!item.txs[0].isUncensoredMode}
           />
           {isPending && (
             <div
@@ -288,6 +357,23 @@ export const TransactionItem = ({
                 autoAdjustOverflow={false}
               >
                 <div className="flex items-center">
+                  {!item.txs[0].isUncensoredMode && chain?.id === 11155420 && (
+                    <>
+                      <Tooltip
+                        title={canCancel ? 'Force Include' : null}
+                        overlayClassName="rectangle"
+                      >
+                        <ThemeIcon
+                          className={clsx('icon icon-action', {
+                            'cursor-not-allowed': !canCancel,
+                          })}
+                          src={RcIconUncensored}
+                          onClick={handleClickForceInclude}
+                        />
+                      </Tooltip>
+                      <div className="hr" />
+                    </>
+                  )}
                   <Tooltip
                     title={
                       canCancel

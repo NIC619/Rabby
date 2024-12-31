@@ -28,6 +28,7 @@ interface PreferenceState {
   isShowTestnet: boolean;
   addressSortStore: AddressSortStore;
   themeMode: DARK_MODE_TYPE;
+  isUncensoredMode: boolean;
   reserveGasOnSendToken: boolean;
   isHideEcologyNoticeDict: Record<string | number, boolean>;
 }
@@ -54,6 +55,7 @@ export const preference = createModel<RootModel>()({
     isShowTestnet: false,
     addressSortStore: {} as AddressSortStore,
     themeMode: DARK_MODE_TYPE.system,
+    isUncensoredMode: true,
     reserveGasOnSendToken: false,
     isHideEcologyNoticeDict: {},
   } as PreferenceState,
@@ -220,6 +222,19 @@ export const preference = createModel<RootModel>()({
       });
       await store.app.wallet.setThemeMode(themeMode);
       dispatch.preference.getPreference('themeMode');
+    },
+
+    async getIsUncensoredMode(store) {
+      const value = await store.app.wallet.getUncensoredMode();
+      return value;
+    },
+
+    async setIsUncensoredMode(value: boolean, store) {
+      dispatch.preference.setField({
+        isUncensoredMode: value,
+      });
+      await store.app.wallet.setUncensoredMode(value);
+      dispatch.preference.getPreference('isUncensoredMode');
     },
 
     async setIsReserveGasOnSendToken(value: boolean, store) {

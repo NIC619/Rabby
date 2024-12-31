@@ -5001,6 +5001,13 @@
   dependencies:
     reselect "^4.0.0"
 
+"@rollup-uncensored/sdk@^0.1.6":
+  version "0.1.6"
+  resolved "https://registry.yarnpkg.com/@rollup-uncensored/sdk/-/sdk-0.1.6.tgz#57f8b58c15919f1067bcd2387e40eb31ccd6bd2c"
+  integrity sha512-me9qk3xYNNXV7zdr7/k58jhU9eMs3hrkoE0S9n8KRHVBnlbFFM354n66MRyrj+f7KxP35kw1CFwsbiIR42rkLQ==
+  dependencies:
+    viem "2.21.12"
+
 "@safe-global/api-kit@2.5.6", "@safe-global/api-kit@^2.5.6":
   version "2.5.6"
   resolved "https://registry.yarnpkg.com/@safe-global/api-kit/-/api-kit-2.5.6.tgz#d9c79835330f166ee823fc0622991f579a080fba"
@@ -20758,6 +20765,21 @@ viem@2.17.3:
     isows "1.0.4"
     ws "8.17.1"
 
+viem@2.21.12:
+  version "2.21.12"
+  resolved "https://registry.yarnpkg.com/viem/-/viem-2.21.12.tgz#10c668668b62d276e806fc3261145a9285ae663c"
+  integrity sha512-yPZulbPdoDnuB8Gm2m+Qc9Mjgl6gC1YgNU6zcO+C8XZNYwaCNE6mokPiy30m8o5I1XkfvMc35jMmtT1zCb8yxA==
+  dependencies:
+    "@adraffy/ens-normalize" "1.10.0"
+    "@noble/curves" "1.4.0"
+    "@noble/hashes" "1.4.0"
+    "@scure/bip32" "1.4.0"
+    "@scure/bip39" "1.4.0"
+    abitype "1.0.5"
+    isows "1.0.4"
+    webauthn-p256 "0.0.5"
+    ws "8.17.1"
+
 viem@^2.21.8:
   version "2.21.37"
   resolved "https://registry.yarnpkg.com/viem/-/viem-2.21.37.tgz#4d67bee8749321b0fd142c54df2021d5774403b1"
@@ -21171,6 +21193,14 @@ webauthn-p256@0.0.10:
   version "0.0.10"
   resolved "https://registry.yarnpkg.com/webauthn-p256/-/webauthn-p256-0.0.10.tgz#877e75abe8348d3e14485932968edf3325fd2fdd"
   integrity sha512-EeYD+gmIT80YkSIDb2iWq0lq2zbHo1CxHlQTeJ+KkCILWpVy3zASH3ByD4bopzfk0uCwXxLqKGLqp2W4O28VFA==
+  dependencies:
+    "@noble/curves" "^1.4.0"
+    "@noble/hashes" "^1.4.0"
+
+webauthn-p256@0.0.5:
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/webauthn-p256/-/webauthn-p256-0.0.5.tgz#0baebd2ba8a414b21cc09c0d40f9dd0be96a06bd"
+  integrity sha512-drMGNWKdaixZNobeORVIqq7k5DsRC9FnG201K2QjeOoQLmtSDaSsVZdkg6n5jUALJKcAG++zBPJXmv6hy0nWFg==
   dependencies:
     "@noble/curves" "^1.4.0"
     "@noble/hashes" "^1.4.0"

@@ -40,6 +40,8 @@ export interface TransactionHistoryItem {
   isWithdrawed?: boolean;
   explain?: TransactionGroup['explain'];
   action?: TransactionGroup['action'];
+
+  isUncensoredMode?: boolean;
 }
 
 export interface TransactionSigningItem {

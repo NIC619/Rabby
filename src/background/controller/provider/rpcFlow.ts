@@ -3,6 +3,7 @@ import {
   keyringService,
   notificationService,
   permissionService,
+  preferenceService,
 } from 'background/service';
 import { PromiseFlow, underline2Camelcase } from 'background/utils';
 import { CHAINS, EVENTS } from 'consts';
@@ -15,7 +16,10 @@ import stats from '@/stats';
 import { addHexPrefix, stripHexPrefix } from 'ethereumjs-util';
 import { findChain } from '@/utils/chain';
 import { waitSignComponentAmounted } from '@/utils/signEvent';
+import { UncensoredSDK } from '@rollup-uncensored/sdk';
 import { gnosisController } from './gnosisController';
+
+const uncensored = new UncensoredSDK();
 
 const isSignApproval = (type: string) => {
   const SIGN_APPROVALS = ['SignText', 'SignTypedData', 'SignTx'];
@@ -196,6 +200,30 @@ const flowContext = flow
             params[0].chainId = chain.id;
           }
         }
+      }
+      // If Uncensored Mode is enabled and Uncensored SDK supports the chain, we transform the L2 tx to L1 Force Inclusion tx
+      const isUncensoredMode = preferenceService.getUncensoredMode();
+      const txParams = { ...ctx.request.data.params[0] };
+      if (
+        isUncensoredMode &&
+        txParams.chainId === 11155420 // Optimism Sepolia
+      ) {
+        const gasLimit = txParams.gas ? txParams.gas : 1000000; // If DApp doesn't provide gas limit, use 1m gas as default
+        const l1ForceInclusionTx = uncensored.transformTransaction({
+          to: txParams.to,
+          value: txParams.value ? BigInt(txParams.value) : BigInt(0),
+          data: txParams.data,
+          gasLimit: gasLimit,
+          chainId: txParams.chainId,
+        });
+        // Modify tx params: change from L2 tx to L1 Force Inclusion tx
+        ctx.request.data.params[0].chainId = 11155111; // Sepolia
+        // ctx.request.data.params[0].from = ctx.request.data.params[0].from; // No need to modify from
+        ctx.request.data.params[0].to = l1ForceInclusionTx.to;
+        ctx.request.data.params[0].value = l1ForceInclusionTx.value.toString();
+        ctx.request.data.params[0].data = l1ForceInclusionTx.data;
+        delete ctx.request.data.params[0].gas; // Gas was set for L2 tx, we delete it and estimate it again on L1
+        ctx.request.data.params[0].isUncensoredMode = true;
       }
       ctx.approvalRes = await notificationService.requestApproval(
         {
