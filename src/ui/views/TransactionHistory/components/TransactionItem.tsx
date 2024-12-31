@@ -247,7 +247,7 @@ export const TransactionItem = ({
     const uncensored = new UncensoredSDK();
     const rawL1ForceInclusionTx = uncensored.transformTransaction({
       to: originTx.rawTx.to,
-      value: BigInt(originTx.rawTx.value),
+      value: originTx.rawTx.value ? BigInt(originTx.rawTx.value) : BigInt(0),
       data: originTx.rawTx.data,
       gasLimit: originTx.rawTx.gas!,
       chainId: item.chainId,
@@ -290,7 +290,7 @@ export const TransactionItem = ({
       value: l1ForceInclusionTx.value,
       data: l1ForceInclusionTx.data,
       nonce: l1ForceInclusionTx.nonce,
-      chainId: l1ForceInclusionTx.chainId,
+      chainId: l1ForceInclusionTx.chainId, // Sepolia
       gasPrice: intToHex(maxGasMarketPrice),
     };
 
@@ -357,7 +357,7 @@ export const TransactionItem = ({
                 autoAdjustOverflow={false}
               >
                 <div className="flex items-center">
-                  {!item.txs[0].isUncensoredMode && (
+                  {!item.txs[0].isUncensoredMode && chain?.id === 11155420 && (
                     <>
                       <Tooltip
                         title={canCancel ? 'Force Include' : null}
