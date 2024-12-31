@@ -181,6 +181,14 @@ export default ({
     }
   }, [showDrawer]);
 
+  useEffect(() => {
+    const initUncensoredMode = async () => {
+      const mode = await wallet.getUncensoredMode();
+      setIsUncensoredMode(mode || false);
+    };
+    initUncensoredMode();
+  }, []);
+
   type IPanelItem = {
     icon: ThemeIconType;
     content: string;
